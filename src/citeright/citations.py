@@ -144,6 +144,8 @@ def _keys(sentence: str, style: str) -> list[str]:
 def match_author_year(key: str, references: list[Reference]) -> Reference | None:
     """Resolve an author-year key such as ``smith:2020`` against a reference list."""
     name, _, year = key.partition(":")
+    if not year.isdigit():
+        return None
     hits = [r for r in references if r.year == int(year) and r.surnames[:1] == [name]]
     return hits[0] if len(hits) == 1 else None
 
