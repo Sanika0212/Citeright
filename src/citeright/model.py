@@ -16,6 +16,7 @@ class Status(StrEnum):
     )
     NOT_FOUND = "not_found"  # no record matches: possibly fabricated
     RETRACTED = "retracted"  # the matching record has been retracted
+    UNCHECKED = "unchecked"  # the lookup failed (network or service error)
 
 
 class Verdict(StrEnum):
@@ -139,7 +140,10 @@ class Report:
         return out
 
     def problems(self) -> int:
-        bad_refs = sum(r.status is not Status.VERIFIED for r in self.resolutions)
+        bad_refs = sum(
+            r.status in (Status.MISMATCH, Status.NOT_FOUND, Status.RETRACTED)
+            for r in self.resolutions
+        )
         bad_claims = sum(c.verdict in (Verdict.CONTRADICTS, Verdict.NOT_FOUND) for c in self.checks)
         return bad_refs + bad_claims + len(self.unknown_keys)
 
