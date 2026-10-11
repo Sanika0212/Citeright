@@ -308,3 +308,63 @@ def test_http_cache_retry_and_doi_check(tmp_path: Path, monkeypatch: pytest.Monk
     assert sources.doi_exists("10.1/yes") is True
     assert sources.doi_exists("10.1/no") is False
     assert Http(cache=False).cache is None
+
+
+def _report():  # type: ignore[no-untyped-def]
+    return check(
+        DRAFT,
+        BIB,
+        resolver=Resolver(FakeSources(), MODEL),
+        support=SupportChecker(LexicalChecker(), SUPPORT),
+        workers=1,
+    )
+
+
+def test_html_report(tmp_path: Path) -> None:
+    from citeright.report import render, write_report
+
+    page = render(_report(), title="Check <draft>")
+    assert "<title>Check &lt;draft&gt;</title>" in page
+    assert "Retracted" in page
+    assert "ghost" in page  # cited but missing
+    assert 'href="#ref-lecun"' in page
+    assert "<svg" in page
+    assert "Problems only" in page
+    assert write_report(_report(), tmp_path / "r.html").read_text().startswith("<!doctype html>")
+
+
+def test_cli_check_and_fail_on(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import citeright.check as check_module
+    from citeright import cli
+
+    monkeypatch.setattr(check_module, "Resolver", lambda: Resolver(FakeSources(), MODEL))
+    monkeypatch.setattr(
+        "citeright.support.SupportModel.load", lambda *a, **k: SUPPORT, raising=True
+    )
+    draft, bib = tmp_path / "paper.tex", tmp_path / "refs.bib"
+    draft.write_text(DRAFT)
+    bib.write_text(BIB)
+    base = ["check", str(draft), "--bib", str(bib), "--checker", "lexical"]
+    html, out = tmp_path / "r.html", tmp_path / "r.json"
+    assert cli.main([*base, "--html", str(html), "--json", str(out)]) == 0
+    text = capsys.readouterr().out
+    assert "XX wakefield" in text
+    assert "cited but not in the bibliography" in text
+    assert html.exists()
+    assert json.loads(out.read_text())["counts"]["retracted"] == 1
+    assert cli.main([*base, "--no-support", "--fail-on", "retracted"]) == 1
+    assert cli.main([*base, "--no-support", "--fail-on", "mismatch"]) == 0
+    assert cli.main([*base, "--fail-on", "nonsense"]) == 2
+    assert cli.main(["bench"]) == 2
+
+
+def test_cli_resolve(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    import citeright.resolve as resolve_module
+    from citeright import cli
+
+    original = resolve_module.Resolver
+    monkeypatch.setattr(resolve_module, "Resolver", lambda: original(FakeSources(), MODEL))
+    assert cli.main(["resolve", "Deep learning", "--author", "LeCun, Y.", "--year", "2015"]) == 0
+    assert json.loads(capsys.readouterr().out)["status"] == "verified"

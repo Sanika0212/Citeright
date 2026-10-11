@@ -118,6 +118,9 @@ def normalize_arxiv(value: str | None) -> str | None:
     return match.group(1).lower() if match else None
 
 
+_RETRACTED = re.compile(r"^(?:retracted(?: article)?|retraction|withdrawn)\s+")
+
+
 def title_similarity(a: str, b: str) -> float:
     """Similarity of two titles in [0, 1], robust to case, accents, punctuation and LaTeX.
 
@@ -125,13 +128,13 @@ def title_similarity(a: str, b: str) -> float:
     (catches reordering and dropped subtitles), with containment counted when the
     shorter title is a prefix of the longer (a subtitle left out).
     """
-    na, nb = normalize(a), normalize(b)
+    na, nb = _RETRACTED.sub("", normalize(a)), _RETRACTED.sub("", normalize(b))
     if not na or not nb:
         return 0.0
     if na == nb:
         return 1.0
     ratio = SequenceMatcher(None, na, nb).ratio()
-    ta, tb = set(tokens(a)), set(tokens(b))
+    ta, tb = set(na.split()) - _STOP, set(nb.split()) - _STOP
     if not ta or not tb:
         return ratio
     overlap = len(ta & tb) / len(ta | tb)

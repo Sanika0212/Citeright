@@ -4,6 +4,11 @@ Every request goes through :class:`Http`, which caches responses on disk (so a s
 check of the same draft is instant and polite), retries rate limits and server errors
 with backoff, and spaces requests out. A contact address for the APIs' "polite pools"
 is sent only if you set ``CITERIGHT_MAILTO``.
+
+OpenAlex gives anonymous users a small daily budget for searches (lookups of a single
+work by DOI or id are free). Citeright therefore searches Crossref first and OpenAlex
+only as a fallback; set ``OPENALEX_API_KEY`` for a larger budget. When the budget runs
+out, OpenAlex searches are skipped for the rest of the run instead of waiting.
 """
 
 from __future__ import annotations
@@ -92,7 +97,10 @@ class Http:
                 continue
             if response.status_code in _TRANSIENT and attempt < self.retries:
                 retry_after = response.headers.get("retry-after", "")
-                time.sleep(float(retry_after) if retry_after.isdigit() else delay)
+                wait_for = float(retry_after) if retry_after.isdigit() else delay
+                if wait_for > 60:  # a daily quota, not a burst limit: do not wait for it
+                    return response.status_code, response.text
+                time.sleep(wait_for)
                 delay *= 2
                 continue
             status, body = response.status_code, response.text
@@ -175,30 +183,48 @@ def _openalex_record(work: dict[str, Any]) -> Record:
 class OpenAlex:
     base = "https://api.openalex.org"
 
-    def __init__(self, http: Http) -> None:
+    def __init__(self, http: Http, api_key: str | None = None) -> None:
         self.http = http
+        self.api_key = api_key or os.environ.get("OPENALEX_API_KEY") or None
+        self.exhausted = False  # set when the daily search budget has run out
+
+    def _params(self, params: dict[str, Any]) -> dict[str, Any]:
+        return {**params, "api_key": self.api_key} if self.api_key else params
 
     def by_doi(self, doi: str) -> Record | None:
-        work = self.http.json(f"{self.base}/works/doi:{doi}", {"select": _OPENALEX_FIELDS})
+        work = self.http.json(
+            f"{self.base}/works/doi:{doi}", self._params({"select": _OPENALEX_FIELDS})
+        )
         return _openalex_record(work) if work else None
 
     def by_arxiv(self, arxiv_id: str) -> Record | None:
         return self.by_doi(f"10.48550/arxiv.{arxiv_id}")
 
     def by_id(self, work_id: str) -> Record | None:
-        work = self.http.json(f"{self.base}/works/{work_id}", {"select": _OPENALEX_FIELDS})
+        work = self.http.json(
+            f"{self.base}/works/{work_id}", self._params({"select": _OPENALEX_FIELDS})
+        )
         return _openalex_record(work) if work else None
+
+    def works(self, filters: str, *, limit: int = 50, **extra: Any) -> list[Record]:
+        """One page of a filtered list (costs one credit of the daily budget)."""
+        if self.exhausted:
+            return []
+        params = {"filter": filters, "per-page": limit, "select": _OPENALEX_FIELDS, **extra}
+        status, body = self.http.get(f"{self.base}/works", self._params(params))
+        if status == 429:
+            self.exhausted = True
+            return []
+        if status != 200:
+            raise RuntimeError(f"OpenAlex returned {status}")
+        return [_openalex_record(w) for w in json.loads(body).get("results", [])]
 
     def search(self, title: str, limit: int = 5) -> list[Record]:
         query = re.sub(r"[,:|!()\[\]{}\"?]", " ", title)
         query = re.sub(r"\s+", " ", query).strip()
         if not query:
             return []
-        data = self.http.json(
-            f"{self.base}/works",
-            {"filter": f"title.search:{query}", "per-page": limit, "select": _OPENALEX_FIELDS},
-        )
-        return [_openalex_record(w) for w in (data or {}).get("results", [])]
+        return self.works(f"title.search:{query}", limit=limit)
 
 
 # ---------------------------------------------------------------------- Crossref
@@ -326,7 +352,7 @@ class Sources:
 
     def __init__(self, http: Http | None = None) -> None:
         self.http = http or Http()
-        self.openalex = OpenAlex(self.http)
+        self.openalex = OpenAlex(self.http)  # reads OPENALEX_API_KEY
         self.crossref = Crossref(self.http)
         self.arxiv = ArXiv(self.http)
 

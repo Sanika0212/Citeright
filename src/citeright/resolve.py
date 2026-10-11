@@ -4,8 +4,8 @@ For each reference:
 
 1. **Identifiers first.** A DOI is checked against the DOI handle system (does it exist
    at all?) and looked up in OpenAlex and Crossref; an arXiv id is looked up on arXiv.
-2. **Then the title.** OpenAlex title search and Crossref bibliographic search find
-   candidates when there is no identifier, or when the identifier points elsewhere.
+2. **Then the title.** Crossref bibliographic search (and OpenAlex title search if that
+   fails) finds candidates when there is no identifier, or when it points elsewhere.
 3. **Match.** Each candidate is compared field by field (title, authors, year, venue,
    identifiers). A logistic model fitted on real and corrupted references
    (``citeright bench match``) turns the comparison into a calibrated
@@ -187,11 +187,12 @@ class Resolver:
                 found.append(arxiv_record)
         scored = self._score(ref, found)
         if self.search and not self._confident(scored) and (ref.title or ref.raw):
-            found.extend(self.sources.openalex.search(ref.title or ref.raw, self.limit))
+            # Crossref first (free); OpenAlex search (daily budget) only if that fails.
+            query = _bibliographic(ref) if ref.title else ref.raw
+            found.extend(self.sources.crossref.search(query, self.limit))
             scored = self._score(ref, found)
             if not self._confident(scored):
-                query = _bibliographic(ref) if ref.title else ref.raw
-                found.extend(self.sources.crossref.search(query, self.limit))
+                found.extend(self.sources.openalex.search(ref.title or ref.raw, self.limit))
                 scored = self._score(ref, found)
         if not self._confident(scored):
             if doi_record is not None and ref.title:
