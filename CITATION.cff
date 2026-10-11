@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use Citeright, please cite it as below."
+title: "Citeright: checking that citations are real, correct, not retracted, and supported by the cited work"
+type: software
+authors:
+  - family-names: Najan
+    given-names: Sanika Vilas
+    email: sanikanajan@gmail.com
+version: 0.1.0
+date-released: 2026-10-12
+license: Apache-2.0
+repository-code: "https://github.com/Sanika0212/Citeright"
+keywords:
+  - citations
+  - reference verification
+  - retractions
+  - fact checking
+  - scientific writing
