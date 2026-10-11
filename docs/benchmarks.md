@@ -14,7 +14,7 @@ uv sync --extra models --extra bench --extra viz
 uv run citeright bench match --seeds 60 --per-seed 12 --retracted 60
 ```
 
-1. **Data.** A random sample of 60 articles published 2021 to 2024 with at least five
+1. **Data.** A random sample of 60 articles published 2021 to 2024 with more than five
    citations is drawn from OpenAlex, across all fields, and up to 12 works from each
    reference list are kept. Each is written the way an author would (title, the first
    3, 5 or 10 authors, full names or initials, year, venue, and the DOI half the time)
