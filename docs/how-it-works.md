@@ -45,7 +45,7 @@ For each reference (`citeright.resolve`):
    Crossref; an arXiv id on arXiv.
 2. **Search.** If the identifiers do not lead to a confident match, Crossref's
    bibliographic search is tried, then OpenAlex's title search (OpenAlex gives
-   anonymous users a daily search budget, so it is the fallback).
+   anonymous users a daily search budget, so it is the fallback), then arXiv's.
 3. **Match.** Each candidate is compared with the reference field by field: title
    similarity (robust to case, accents, LaTeX, typos and dropped subtitles), whether the
    first author matches, author overlap, year difference, DOI and arXiv equality, venue
@@ -61,6 +61,13 @@ For each reference (`citeright.resolve`):
    4. `retracted`: the matched work carries a retraction notice (Crossref's
       Retraction Watch data, or OpenAlex's retraction flag); corrections and
       expressions of concern are listed as issues.
+
+When a match's year is far from the reference's, the search continues: the same work
+often exists as a preprint and a later reprint, and the reference may mean either.
+
+The text a citing sentence is checked against is the record's abstract. OpenAlex and
+Crossref often lack abstracts for some publishers, so Citeright also asks Europe PMC
+(by DOI) and arXiv (for preprints).
 
 Every HTTP response is cached on disk (`~/.cache/citeright`, 30 days), so a second
 check of the same draft makes no requests.
