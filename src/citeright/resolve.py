@@ -27,6 +27,8 @@ from dataclasses import dataclass, field
 from importlib import resources
 from pathlib import Path
 
+import httpx
+
 from citeright.model import Record, Reference, Resolution, Status
 from citeright.sources import Sources
 from citeright.text import surname, title_similarity
@@ -159,9 +161,13 @@ class Resolver:
                 rec.notices = other.notices
                 rec.retracted = rec.retracted or other.retracted
                 rec.abstract = rec.abstract or other.abstract
+        with contextlib.suppress(RuntimeError, httpx.HTTPError):  # an abstract is optional
+            self._abstract(rec)
+        return rec
+
+    def _abstract(self, rec: Record) -> None:
         if not rec.abstract and rec.doi:
-            with contextlib.suppress(RuntimeError):
-                rec.abstract = self.sources.europepmc.abstract(rec.doi)
+            rec.abstract = self.sources.europepmc.abstract(rec.doi)
         if not rec.abstract and rec.arxiv and rec.source != "arxiv":
             preprint = self.sources.arxiv.by_id(rec.arxiv)
             rec.abstract = preprint.abstract if preprint else ""
@@ -170,12 +176,11 @@ class Resolver:
                 if title_similarity(preprint.title, rec.title) >= 0.95:
                     rec.abstract = preprint.abstract
                     break
-        return rec
 
     def resolve(self, ref: Reference) -> Resolution:
         try:
             return self._resolve(ref)
-        except (RuntimeError, OSError, ValueError) as exc:  # network or service failure
+        except (RuntimeError, OSError, ValueError, httpx.HTTPError) as exc:  # network or service
             return Resolution(ref, Status.UNCHECKED, issues=[f"lookup failed: {exc}"])
 
     def _resolve(self, ref: Reference) -> Resolution:

@@ -181,6 +181,29 @@ def test_lookup_failure_is_unchecked() -> None:
     assert r.status is Status.UNCHECKED
     assert "service unavailable" in r.issues[0]
 
+    class Offline(FakeSources):
+        def doi_exists(self, doi: str) -> bool | None:
+            raise httpx.ConnectError("name not known")
+
+    r = Resolver(Offline(), MODEL).resolve(Reference("k", "Deep learning", doi="10.1/x"))
+    assert r.status is Status.UNCHECKED
+    assert "name not known" in r.issues[0]
+
+
+def test_abstract_lookup_failure_keeps_the_match() -> None:
+    class NoArxiv(FakeIndex):
+        def search(self, query: str, limit: int = 5) -> list[Record]:
+            raise httpx.ConnectError("name not known")
+
+    bare = Record("openalex", "W9", "Attention is all you need", ["Ashish Vaswani"], 2017)
+    sources = FakeSources()
+    sources.openalex = FakeIndex([bare])  # type: ignore[assignment]
+    sources.arxiv = NoArxiv([])  # type: ignore[assignment]
+    r = Resolver(sources, MODEL).resolve(Reference("k", bare.title, ["Vaswani, A."], 2017))
+    assert r.status is Status.VERIFIED
+    assert r.record is not None
+    assert r.record.abstract == ""
+
 
 def test_match_model_round_trip(tmp_path: Path) -> None:
     path = tmp_path / "m.json"
