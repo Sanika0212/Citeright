@@ -47,7 +47,26 @@ numbered (`[1]`, `[2-4]`) and author-year citations, with a BibTeX file, a
 On [examples/draft.md](examples/draft.md), a short text with real papers and five
 planted problems:
 
-<!-- demo output -->
+```text
+ok lecun2015                verified
+!! vaswani2017              mismatch
+     year is 2017, not 2015
+!! he2016                   mismatch
+     DOI 10.1038/nature14539 belongs to another work ('Deep learning'); this work's DOI is 10.1109/cvpr.2016.90
+?? smith2021                not_found
+     DOI 10.5555/jmlr.2021.0193 does not exist
+XX wakefield1998            retracted
+     retracted on 2010-02-06 (10.1016/s0140-6736(10)60175-4)
+     correction published 2004-03-06 (10.1016/s0140-6736(04)15715-2)
+
+line 8: [lecun2015] not_found (P(supports) 0.17)
+     Deep networks are provably robust to adversarial examples.
+```
+
+The fabricated reference, the wrong year, the borrowed DOI and the retracted study are
+caught, and so is the sentence that cites a real, correct paper for something it does
+not say.
+
 
 The HTML report is a single file with no external requests: a summary, a graph of
 which sentences cite which references, every reference with what is wrong with it, and
@@ -87,7 +106,44 @@ address sent to the APIs' polite pools (it is never sent otherwise).
 
 ## Results
 
-<!-- results -->
+Every number comes from [docs/benchmarks.md](docs/benchmarks.md), with the commands to
+reproduce it.
+
+### Are the references real, correct and not retracted?
+
+<!-- match results -->
+
+### Does the cited work back the sentence?
+
+Two expert-labelled datasets: SciFact (claims written from citing sentences, checked
+against the cited abstract; 340 held-out claims) and Citation-Integrity (real citing
+sentences from biomedical papers, checked against the full text of the cited paper;
+606 held-out citations). The calibration is fitted on both training sets.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/support-dark.png">
+  <img alt="AUROC per checker: NLI 92% on SciFact and 68% on Citation-Integrity, MiniCheck 88% and 67%, embedding similarity 79% and 63%, word overlap 78% and 64%" src="docs/assets/support-light.png" width="100%">
+</picture>
+
+| Checker | SciFact: accuracy (3-way) | SciFact: AUROC | Citation-Integrity: AUROC | Calibration error, raw score → calibrated (SciFact / Citation-Integrity) |
+|---|---|---|---|---|
+| **NLI (DeBERTa-v3 large), default** | **76.8%** | **0.915** | **0.675** | 0.140 → 0.084 / 0.350 → 0.074 |
+| MiniCheck (RoBERTa large) | 67.6% | 0.878 | 0.667 | 0.172 → 0.078 / 0.467 → 0.051 |
+| Embedding similarity | 62.6% | 0.790 | 0.631 | 0.248 → 0.063 / 0.105 → 0.055 |
+| Word overlap | 61.8% | 0.780 | 0.643 | 0.061 → 0.052 / 0.158 → 0.045 |
+
+1. **Against an abstract, the check is strong**: 76.8% three-way accuracy on SciFact
+   (always guessing the commonest label gives 41%) and 0.915 AUROC for supported against
+   not supported.
+2. **Real citations against full papers are hard.** On Citation-Integrity the best
+   checker reaches 0.675 AUROC; its three-way accuracy (63%) barely beats always saying
+   "supports" (61%). Many inaccurate citations there are subtle: oversimplified, cited
+   for a result the paper only mentions, or citing a paper that cites the source.
+   Citeright treats these verdicts as leads to read, and shows the passage it judged by.
+3. **Calibration matters most for the raw scores that look most confident**: the NLI
+   model's probabilities are off by 0.35 on Citation-Integrity before calibration and by
+   0.07 after.
+
 
 ## How it works
 
