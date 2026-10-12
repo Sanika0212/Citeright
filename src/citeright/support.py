@@ -258,12 +258,36 @@ def make_checker(spec: str | Checker) -> Checker:
 
 
 _NUMBER = re.compile(r"\d+(?:\.\d+)?%?")
+_VERBS = (
+    r"(?:reported|showed|shown|found|demonstrated|suggested|observed|noted|argued|proposed|"
+    r"concluded|confirmed|revealed|established|indicated|hypothesi[sz]ed|described|proved)"
+)
+_FRAMES = [
+    # "Smith et al. showed that", "An early case series reported that",
+    # "Previous studies have found that", "It has been shown that"
+    re.compile(
+        r"^(?:[\w\-,.'()]+\s+){0,8}?(?:(?:has|have|had)\s+(?:been\s+)?)?" + _VERBS + r"\s+that\s+",
+        re.IGNORECASE,
+    ),
+    re.compile(r"^according to [^,]{1,80},\s+", re.IGNORECASE),
+]
+
+
+def core_claim(claim: str) -> str:
+    """The claim inside a reporting frame: the cited work supports "parents associated X with
+    Y", not "an early case series reported that parents associated X with Y"."""
+    for frame in _FRAMES:
+        rest = frame.sub("", claim, count=1)
+        if rest != claim and len(rest.split()) >= 3:
+            return rest[0].upper() + rest[1:]
+    return claim
 
 
 def evidence_features(
     claim: str, text: str, checker: Checker, *, top: int = 6
 ) -> tuple[dict[str, float], str]:
     """Features of the claim against the cited text, and the best passage."""
+    claim = core_claim(claim)
     passages = rank(claim, windows(text), k=top)
     if not passages:
         return dict.fromkeys(SUPPORT_FEATURES, 0.0), ""

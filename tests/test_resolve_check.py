@@ -378,3 +378,23 @@ def test_cli_resolve(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixt
     monkeypatch.setattr(resolve_module, "Resolver", lambda: original(FakeSources(), MODEL))
     assert cli.main(["resolve", "Deep learning", "--author", "LeCun, Y.", "--year", "2015"]) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "verified"
+
+
+@pytest.mark.parametrize(
+    ("claim", "core"),
+    [
+        ("Smith et al. (2019) showed that aspirin reduces risk.", "Aspirin reduces risk."),
+        ("Previous studies have found that sleep helps memory.", "Sleep helps memory."),
+        (
+            "It has been shown that exercise lowers blood pressure.",
+            "Exercise lowers blood pressure.",
+        ),
+        ("According to the WHO, measles cases rose in 2019.", "Measles cases rose in 2019."),
+        ("Deep networks are robust to noise.", "Deep networks are robust to noise."),
+        ("We showed that it works.", "We showed that it works."),  # too short to strip
+    ],
+)
+def test_reporting_frames_are_stripped(claim: str, core: str) -> None:
+    from citeright.support import core_claim
+
+    assert core_claim(claim) == core

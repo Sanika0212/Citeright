@@ -148,7 +148,8 @@ class Resolver:
 
     def _notices(self, rec: Record) -> Record:
         """Attach Crossref's editorial notices (retractions, corrections, concerns) and
-        find an abstract when the record has none (Crossref, Europe PMC, arXiv)."""
+        find an abstract when the record has none (Crossref, Europe PMC, arXiv by id, then
+        an arXiv version with the same title)."""
         if rec.source != "crossref" and rec.doi:
             try:
                 other = self.sources.crossref.by_doi(rec.doi)
@@ -164,6 +165,11 @@ class Resolver:
         if not rec.abstract and rec.arxiv and rec.source != "arxiv":
             preprint = self.sources.arxiv.by_id(rec.arxiv)
             rec.abstract = preprint.abstract if preprint else ""
+        if not rec.abstract and rec.title:  # many papers have an arXiv version
+            for preprint in self.sources.arxiv.search(rec.title, 3):
+                if title_similarity(preprint.title, rec.title) >= 0.95:
+                    rec.abstract = preprint.abstract
+                    break
         return rec
 
     def resolve(self, ref: Reference) -> Resolution:

@@ -1,0 +1,427 @@
+{
+ "counts": {
+  "verified": 1,
+  "mismatch": 2,
+  "not_found": 1,
+  "retracted": 1,
+  "unchecked": 0,
+  "claims_supports": 2,
+  "claims_contradicts": 0,
+  "claims_not_found": 2,
+  "claims_no_text": 2
+ },
+ "resolutions": [
+  {
+   "reference": {
+    "key": "lecun2015",
+    "title": "Deep learning",
+    "authors": [
+     "LeCun, Yann",
+     "Bengio, Yoshua",
+     "Hinton, Geoffrey"
+    ],
+    "year": 2015,
+    "doi": "10.1038/nature14539",
+    "arxiv": null,
+    "venue": "Nature",
+    "url": "",
+    "raw": ""
+   },
+   "status": "verified",
+   "record": {
+    "source": "openalex",
+    "id": "W2919115771",
+    "title": "Deep learning",
+    "authors": [
+     "Yann LeCun",
+     "Yoshua Bengio",
+     "Geoffrey E. Hinton"
+    ],
+    "year": 2015,
+    "doi": "10.1038/nature14539",
+    "arxiv": null,
+    "venue": "Nature",
+    "abstract": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer. Deep convolutional nets have brought about breakthroughs in processing images, video, speech and audio, whereas recurrent nets have shone light on sequential data such as text and speech.",
+    "retracted": false,
+    "url": "https://openalex.org/W2919115771",
+    "type": "article",
+    "notices": []
+   },
+   "probability": 0.9985657532638723,
+   "issues": [],
+   "checks": {
+    "title_sim": 1.0,
+    "title_exact": 1.0,
+    "first_author": 1.0,
+    "author_overlap": 1.0,
+    "has_authors": 1.0,
+    "year_close": 1.0,
+    "year_far": 0.0,
+    "has_year": 1.0,
+    "doi_equal": 1.0,
+    "doi_differs": 0.0,
+    "arxiv_equal": 0.0,
+    "venue_sim": 1.0
+   },
+   "candidates": 1
+  },
+  {
+   "reference": {
+    "key": "vaswani2017",
+    "title": "Attention Is All You Need",
+    "authors": [
+     "Vaswani, Ashish",
+     "Shazeer, Noam",
+     "Parmar, Niki"
+    ],
+    "year": 2015,
+    "doi": null,
+    "arxiv": null,
+    "venue": "Advances in Neural Information Processing Systems",
+    "url": "",
+    "raw": ""
+   },
+   "status": "mismatch",
+   "record": {
+    "source": "arxiv",
+    "id": "1706.03762",
+    "title": "Attention Is All You Need",
+    "authors": [
+     "Ashish Vaswani",
+     "Noam Shazeer",
+     "Niki Parmar",
+     "Jakob Uszkoreit",
+     "Llion Jones",
+     "Aidan N. Gomez",
+     "Lukasz Kaiser",
+     "Illia Polosukhin"
+    ],
+    "year": 2017,
+    "doi": null,
+    "arxiv": "1706.03762",
+    "venue": "arXiv",
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "retracted": false,
+    "url": "http://arxiv.org/abs/1706.03762v7",
+    "type": "preprint",
+    "notices": []
+   },
+   "probability": 0.5443650560706573,
+   "issues": [
+    "year is 2017, not 2015"
+   ],
+   "checks": {
+    "title_sim": 1.0,
+    "title_exact": 1.0,
+    "first_author": 1.0,
+    "author_overlap": 1.0,
+    "has_authors": 1.0,
+    "year_close": 0.0,
+    "year_far": 0.0,
+    "has_year": 1.0,
+    "doi_equal": 0.0,
+    "doi_differs": 0.0,
+    "arxiv_equal": 0.0,
+    "venue_sim": 0.07407407407407407
+   },
+   "candidates": 10
+  },
+  {
+   "reference": {
+    "key": "he2016",
+    "title": "Deep Residual Learning for Image Recognition",
+    "authors": [
+     "He, Kaiming",
+     "Zhang, Xiangyu",
+     "Ren, Shaoqing",
+     "Sun, Jian"
+    ],
+    "year": 2016,
+    "doi": "10.1038/nature14539",
+    "arxiv": null,
+    "venue": "CVPR",
+    "url": "",
+    "raw": ""
+   },
+   "status": "mismatch",
+   "record": {
+    "source": "crossref",
+    "id": "10.1109/cvpr.2016.90",
+    "title": "Deep Residual Learning for Image Recognition",
+    "authors": [
+     "Kaiming He",
+     "Xiangyu Zhang",
+     "Shaoqing Ren",
+     "Jian Sun"
+    ],
+    "year": 2016,
+    "doi": "10.1109/cvpr.2016.90",
+    "arxiv": null,
+    "venue": "2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+    "abstract": "",
+    "retracted": false,
+    "url": "https://doi.org/10.1109/cvpr.2016.90",
+    "type": "proceedings-article",
+    "notices": []
+   },
+   "probability": 0.7464203511757924,
+   "issues": [
+    "DOI 10.1038/nature14539 belongs to another work ('Deep learning'); this work's DOI is 10.1109/cvpr.2016.90"
+   ],
+   "checks": {
+    "title_sim": 1.0,
+    "title_exact": 1.0,
+    "first_author": 1.0,
+    "author_overlap": 1.0,
+    "has_authors": 1.0,
+    "year_close": 1.0,
+    "year_far": 0.0,
+    "has_year": 1.0,
+    "doi_equal": 0.0,
+    "doi_differs": 1.0,
+    "arxiv_equal": 0.0,
+    "venue_sim": 0.125
+   },
+   "candidates": 6
+  },
+  {
+   "reference": {
+    "key": "smith2021",
+    "title": "Recursive Attention Distillation for Low-Resource Neural Machine Translation",
+    "authors": [
+     "Smith, Jonathan",
+     "Patel, Riya"
+    ],
+    "year": 2021,
+    "doi": "10.5555/jmlr.2021.0193",
+    "arxiv": null,
+    "venue": "Journal of Machine Learning Research",
+    "url": "",
+    "raw": ""
+   },
+   "status": "not_found",
+   "record": {
+    "source": "crossref",
+    "id": "10.1007/s10590-021-09281-1",
+    "title": "Recent advances of low-resource neural machine translation",
+    "authors": [
+     "Rejwanul Haque",
+     "Chao-Hong Liu",
+     "Andy Way"
+    ],
+    "year": 2021,
+    "doi": "10.1007/s10590-021-09281-1",
+    "arxiv": null,
+    "venue": "Machine Translation",
+    "abstract": "",
+    "retracted": false,
+    "url": "https://doi.org/10.1007/s10590-021-09281-1",
+    "type": "journal-article",
+    "notices": []
+   },
+   "probability": 0.001070430227321271,
+   "issues": [
+    "DOI 10.5555/jmlr.2021.0193 does not exist"
+   ],
+   "checks": {
+    "title_sim": 0.7164179104477612,
+    "title_exact": 0.0,
+    "first_author": 0.0,
+    "author_overlap": 0.0,
+    "has_authors": 1.0,
+    "year_close": 1.0,
+    "year_far": 0.0,
+    "has_year": 1.0,
+    "doi_equal": 0.0,
+    "doi_differs": 1.0,
+    "arxiv_equal": 0.0,
+    "venue_sim": 0.4
+   },
+   "candidates": 5
+  },
+  {
+   "reference": {
+    "key": "wakefield1998",
+    "title": "Ileal-lymphoid-nodular hyperplasia, non-specific colitis, and pervasive developmental disorder in children",
+    "authors": [
+     "Wakefield, Andrew J.",
+     "Murch, S. H.",
+     "Anthony, A."
+    ],
+    "year": 1998,
+    "doi": "10.1016/s0140-6736(97)11096-0",
+    "arxiv": null,
+    "venue": "The Lancet",
+    "url": "",
+    "raw": ""
+   },
+   "status": "retracted",
+   "record": {
+    "source": "openalex",
+    "id": "W2117847125",
+    "title": "RETRACTED: Ileal-lymphoid-nodular hyperplasia, non-specific colitis, and pervasive developmental disorder in children",
+    "authors": [
+     "A J Wakefield",
+     "SIMON H MURCH",
+     "A Anthony",
+     "J. C. Linnell",
+     "D. Casson",
+     "Muhammad Moiz Malik",
+     "Mark Berelowitz",
+     "AP Dhillon",
+     "M.L. Thomson",
+     "P Harvey",
+     "A. R. Valentine",
+     "SE Davies",
+     "JA Walker-Smith"
+    ],
+    "year": 1998,
+    "doi": "10.1016/s0140-6736(97)11096-0",
+    "arxiv": null,
+    "venue": "The Lancet",
+    "abstract": "Background We investigated a consecutive series of children with chronic enterocolitis and regressive developmental disorder. Methods 12 children (mean age 6 years [range 3-10], 11 boys) were referred to a paediatric gastroenterology unit with a history of normal development followed by loss of acquired skills, including language, together with diarrhoea and abdominal pain. Children underwent gastroenterological, neurological, and developmental assessment and review of developmental records. Ileocolonoscopy and biopsy sampling, magnetic-resonance imaging (MRI), electroencephalography (EEG), and lumbar puncture were done under sedation. Barium follow-through radiography was done where possible. Biochemical, haematological, and immunological profiles were examined. Findings Onset of behavioural symptoms was associated, by the parents, with measles, mumps, and rubella vaccination in eight of the 12 children, with measles infection in one child, and otitis media in another. All 12 children had intestinal abnormalities, ranging from lymphoid nodular hyperplasia to aphthoid ulceration. Histology showed patchy chronic inflammation in the colon in 11 children and reactive ileal lymphoid hyperplasia in seven, but no granulomas. Behavioural disorders included autism (nine), disintegrative psychosis (one), and possible postviral or vaccinal encephalitis (two). There were no focal neurological abnormalities and MRI and EEG tests were normal. Abnormal laboratory results were significantly raised urinary methylmalonic acid compared with age-matched controls (p=0.003), low haemoglobin in four children, and a low serum IgA in four children. Interpretation We identified associated gastrointestinal disease and developmental regression in a group of previously normal children, which was generally associated in time with possible environmental triggers.",
+    "retracted": true,
+    "url": "https://openalex.org/W2117847125",
+    "type": "article",
+    "notices": [
+     {
+      "type": "correction",
+      "doi": "10.1016/s0140-6736(04)15715-2",
+      "date": "2004-03-06"
+     },
+     {
+      "type": "retraction",
+      "doi": "10.1016/s0140-6736(10)60175-4",
+      "date": "2010-02-06"
+     }
+    ]
+   },
+   "probability": 0.9985657532638723,
+   "issues": [
+    "retracted on 2010-02-06 (10.1016/s0140-6736(10)60175-4)",
+    "correction published 2004-03-06 (10.1016/s0140-6736(04)15715-2)"
+   ],
+   "checks": {
+    "title_sim": 1.0,
+    "title_exact": 1.0,
+    "first_author": 1.0,
+    "author_overlap": 1.0,
+    "has_authors": 1.0,
+    "year_close": 1.0,
+    "year_far": 0.0,
+    "has_year": 1.0,
+    "doi_equal": 1.0,
+    "doi_differs": 0.0,
+    "arxiv_equal": 0.0,
+    "venue_sim": 1.0
+   },
+   "candidates": 1
+  }
+ ],
+ "checks": [
+  {
+   "citation": {
+    "sentence": "Deep learning lets models with many processing layers learn representations of data at several levels of abstraction [@lecun2015].",
+    "keys": [
+     "lecun2015"
+    ],
+    "line": 3,
+    "claim": "Deep learning lets models with many processing layers learn representations of data at several levels of abstraction."
+   },
+   "key": "lecun2015",
+   "verdict": "supports",
+   "probability": 0.9254792117839715,
+   "evidence": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer.",
+   "evidence_score": 0.9995452761650085,
+   "contradiction": 0.004137725744735506,
+   "text_source": "abstract"
+  },
+  {
+   "citation": {
+    "sentence": "Attention alone, without recurrence or convolution, is enough for state-of-the-art machine translation [@vaswani2017].",
+    "keys": [
+     "vaswani2017"
+    ],
+    "line": 4,
+    "claim": "Attention alone, without recurrence or convolution, is enough for state-of-the-art machine translation."
+   },
+   "key": "vaswani2017",
+   "verdict": "supports",
+   "probability": 0.8254164433257515,
+   "evidence": "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU.",
+   "evidence_score": 0.9728843569755554,
+   "contradiction": 0.014087610024653176,
+   "text_source": "abstract"
+  },
+  {
+   "citation": {
+    "sentence": "Residual connections made networks with more than a hundred layers trainable [@he2016].",
+    "keys": [
+     "he2016"
+    ],
+    "line": 6,
+    "claim": "Residual connections made networks with more than a hundred layers trainable."
+   },
+   "key": "he2016",
+   "verdict": "no_text",
+   "probability": 0.0,
+   "evidence": "",
+   "evidence_score": 0.0,
+   "contradiction": 0.0,
+   "text_source": ""
+  },
+  {
+   "citation": {
+    "sentence": "Deep networks are provably robust to adversarial examples [@lecun2015].",
+    "keys": [
+     "lecun2015"
+    ],
+    "line": 8,
+    "claim": "Deep networks are provably robust to adversarial examples."
+   },
+   "key": "lecun2015",
+   "verdict": "not_found",
+   "probability": 0.1727276813213666,
+   "evidence": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction.",
+   "evidence_score": 0.000440785865066573,
+   "contradiction": 0.06674840536414735,
+   "text_source": "abstract"
+  },
+  {
+   "citation": {
+    "sentence": "Recursive attention distillation closes most of the gap for low-resource translation [@smith2021].",
+    "keys": [
+     "smith2021"
+    ],
+    "line": 8,
+    "claim": "Recursive attention distillation closes most of the gap for low-resource translation."
+   },
+   "key": "smith2021",
+   "verdict": "no_text",
+   "probability": 0.0,
+   "evidence": "",
+   "evidence_score": 0.0,
+   "contradiction": 0.0,
+   "text_source": ""
+  },
+  {
+   "citation": {
+    "sentence": "Some early clinical reports linked the MMR vaccine to developmental disorders [@wakefield1998].",
+    "keys": [
+     "wakefield1998"
+    ],
+    "line": 10,
+    "claim": "Some early clinical reports linked the MMR vaccine to developmental disorders."
+   },
+   "key": "wakefield1998",
+   "verdict": "not_found",
+   "probability": 0.41586289628296036,
+   "evidence": "Histology showed patchy chronic inflammation in the colon in 11 children and reactive ileal lymphoid hyperplasia in seven, but no granulomas. Behavioural disorders included autism (nine), disintegrative psychosis (one), and possible postviral or vaccinal encephalitis (two).",
+   "evidence_score": 0.8120874762535095,
+   "contradiction": 0.027107794875419096,
+   "text_source": "abstract"
+  }
+ ],
+ "unknown_keys": [],
+ "uncited": []
+}
