@@ -150,11 +150,19 @@ def _ece(p: np.ndarray, y: np.ndarray, bins: int = 10) -> float:
 
 
 def _auroc(scores: np.ndarray, y: np.ndarray) -> float:
-    pos, neg = scores[y == 1], scores[y == 0]
-    if len(pos) == 0 or len(neg) == 0:
+    """Mann-Whitney AUROC with tied scores given their average rank."""
+    s = np.asarray(scores, dtype=float)
+    pos = np.asarray(y) == 1
+    n_pos, n_neg = int(pos.sum()), int((~pos).sum())
+    if n_pos == 0 or n_neg == 0:
         return float("nan")
-    ranks = np.argsort(np.argsort(np.concatenate([pos, neg]), kind="stable"), kind="stable") + 1
-    return float((ranks[: len(pos)].sum() - len(pos) * (len(pos) + 1) / 2) / (len(pos) * len(neg)))
+    order = s.argsort(kind="mergesort")
+    ranks = np.empty(len(s))
+    ranks[order] = np.arange(1, len(s) + 1)
+    for value in np.unique(s):  # average ranks over ties
+        tied = s == value
+        ranks[tied] = ranks[tied].mean()
+    return float((ranks[pos].sum() - n_pos * (n_pos + 1) / 2) / (n_pos * n_neg))
 
 
 def evaluate(model: SupportModel, x: np.ndarray, y: Sequence[str]) -> dict[str, Any]:

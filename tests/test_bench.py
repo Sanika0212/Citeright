@@ -211,3 +211,9 @@ def test_dataset_loaders(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Non
     assert [r["label"] for r in rows] == ["supports", "contradicts", "not_found"]
     assert rows[0]["claim"] == "x"
     assert rows[0]["text"] == "T a b"
+
+
+def test_auroc_averages_ties() -> None:
+    scores = np.array([0.0, 0.0, 0.0, 0.0])
+    assert support._auroc(scores, np.array([1, 0, 1, 0])) == 0.5
+    assert support._auroc(np.array([0.1, 0.9, 0.5, 0.5]), np.array([0, 1, 1, 0])) == 0.875
