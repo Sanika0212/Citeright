@@ -314,6 +314,10 @@ def test_http_cache_retry_and_doi_check(tmp_path: Path, monkeypatch: pytest.Monk
     assert http.json("https://x.test/flaky") == {"ok": True}  # cached
     assert calls["n"] == 2
     assert http.json("https://x.test/missing") is None
+    assert http.json("https://x.test/keyed", {"q": "a"}) == {"ok": True}
+    assert http.json("https://x.test/keyed", {"q": "a", "api_key": "secret"}) == {"ok": True}
+    assert calls["n"] == 4  # the key does not change the cache entry
+    assert not any("secret" in f.read_text() for f in tmp_path.rglob("*.json"))
     sources = Sources(http)
     assert sources.doi_exists("10.1/yes") is True
     assert sources.doi_exists("10.1/no") is False

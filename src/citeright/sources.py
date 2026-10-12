@@ -32,6 +32,7 @@ from citeright.text import normalize_arxiv, normalize_doi
 
 USER_AGENT = f"citeright/{__version__} (+https://github.com/Sanika0212/Citeright)"
 _TRANSIENT = {429, 500, 502, 503, 504}
+_SECRET_PARAMS = {"api_key"}  # never part of a cache key: adding a key keeps the cache
 
 
 def cache_dir() -> Path:
@@ -76,8 +77,11 @@ class Http:
 
     def get(self, url: str, params: dict[str, Any] | None = None) -> tuple[int, str]:
         """``(status, body)``; a 404 is a normal answer ("no such work"), not an error."""
-        full = str(httpx.URL(url, params=params or {}))
-        path = self._path(full)
+        params = params or {}
+        full = str(httpx.URL(url, params=params))
+        path = self._path(
+            str(httpx.URL(url, params={k: v for k, v in params.items() if k not in _SECRET_PARAMS}))
+        )
         if path is not None and path.exists() and time.time() - path.stat().st_mtime < self.max_age:
             data = json.loads(path.read_text())
             return int(data["status"]), str(data["body"])
@@ -109,7 +113,7 @@ class Http:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(json.dumps({"status": status, "body": body}))
             return status, body
-        raise RuntimeError(f"unreachable: {full}")  # pragma: no cover
+        raise RuntimeError(f"unreachable: {url}")  # pragma: no cover
 
     def json(self, url: str, params: dict[str, Any] | None = None) -> Any:
         status, body = self.get(url, params)
