@@ -31,7 +31,10 @@ sentence against the cited text:
    verdict: supports, contradicts, or not found in the cited work, and the passage
    that decides it.
 
-<!-- demo animation -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/check-dark.gif">
+  <img alt="Animation: the references of a short draft are looked up one by one and marked verified, mismatch, not found or retracted; then each citing sentence is linked to its reference with a verdict" src="docs/assets/check-light.gif" width="100%">
+</picture>
 
 ## Quickstart
 
@@ -72,7 +75,10 @@ The HTML report is a single file with no external requests: a summary, a graph o
 which sentences cite which references, every reference with what is wrong with it, and
 every citing sentence with the passage that decides it.
 
-<!-- report screenshot -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/report-dark.png">
+  <img alt="HTML report: status counts, a graph of which sentences cite which references, and each citing sentence with its verdict and the passage of the cited abstract that decides it" src="docs/assets/report-light.png" width="100%">
+</picture>
 
 ## In CI
 
@@ -118,31 +124,34 @@ reproduce it.
 Two expert-labelled datasets: SciFact (claims written from citing sentences, checked
 against the cited abstract; 340 held-out claims) and Citation-Integrity (real citing
 sentences from biomedical papers, checked against the full text of the cited paper;
-606 held-out citations). The calibration is fitted on both training sets.
+606 held-out citations). The calibration is fitted on both training sets. A reporting
+frame ("Smith et al. showed that ...") is stripped before checking, since the cited work
+supports the claim inside it; this changes neither benchmark measurably but removes a
+clear class of false alarms.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/support-dark.png">
-  <img alt="AUROC per checker: NLI 92% on SciFact and 68% on Citation-Integrity, MiniCheck 88% and 67%, embedding similarity 79% and 63%, word overlap 78% and 64%" src="docs/assets/support-light.png" width="100%">
+  <img alt="AUROC per checker: NLI 92% on SciFact and 67% on Citation-Integrity, MiniCheck 88% and 67%, embedding similarity 79% and 63%, word overlap 78% and 64%" src="docs/assets/support-light.png" width="100%">
 </picture>
 
 | Checker | SciFact: accuracy (3-way) | SciFact: AUROC | Citation-Integrity: AUROC | Calibration error, raw score → calibrated (SciFact / Citation-Integrity) |
 |---|---|---|---|---|
-| **NLI (DeBERTa-v3 large), default** | **76.8%** | **0.915** | **0.675** | 0.140 → 0.084 / 0.350 → 0.074 |
-| MiniCheck (RoBERTa large) | 67.6% | 0.878 | 0.667 | 0.172 → 0.078 / 0.467 → 0.051 |
-| Embedding similarity | 62.6% | 0.790 | 0.631 | 0.248 → 0.063 / 0.105 → 0.055 |
-| Word overlap | 61.8% | 0.780 | 0.643 | 0.061 → 0.052 / 0.158 → 0.045 |
+| **NLI (DeBERTa-v3 large), default** | **76.5%** | **0.915** | **0.668** | 0.140 → 0.084 / 0.358 → 0.079 |
+| MiniCheck (RoBERTa large) | 67.9% | 0.878 | 0.666 | 0.172 → 0.077 / 0.464 → 0.057 |
+| Embedding similarity | 62.6% | 0.789 | 0.632 | 0.248 → 0.054 / 0.107 → 0.051 |
+| Word overlap | 61.8% | 0.780 | 0.641 | 0.061 → 0.054 / 0.156 → 0.041 |
 
-1. **Against an abstract, the check is strong**: 76.8% three-way accuracy on SciFact
+1. **Against an abstract, the check is strong**: 76.5% three-way accuracy on SciFact
    (always guessing the commonest label gives 41%) and 0.915 AUROC for supported against
    not supported.
 2. **Real citations against full papers are hard.** On Citation-Integrity the best
-   checker reaches 0.675 AUROC; its three-way accuracy (63%) barely beats always saying
+   checker reaches 0.668 AUROC; its three-way accuracy (63%) barely beats always saying
    "supports" (61%). Many inaccurate citations there are subtle: oversimplified, cited
    for a result the paper only mentions, or citing a paper that cites the source.
    Citeright treats these verdicts as leads to read, and shows the passage it judged by.
 3. **Calibration matters most for the raw scores that look most confident**: the NLI
-   model's probabilities are off by 0.35 on Citation-Integrity before calibration and by
-   0.07 after.
+   model's probabilities are off by 0.36 on Citation-Integrity before calibration and by
+   0.08 after.
 
 
 ## How it works
