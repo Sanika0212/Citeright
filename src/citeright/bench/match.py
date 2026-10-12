@@ -282,6 +282,7 @@ def score(statuses: Sequence[Status], items: Sequence[dict[str, Any]]) -> dict[s
         "problem_recall": tp / max(sum(faulty), 1),
         "by_fault": {k: float(np.mean(v)) for k, v in sorted(by_fault.items())},
         "n": len(items),
+        "unchecked": sum(s is Status.UNCHECKED for s in statuses),  # lookups that failed
     }
 
 
@@ -349,6 +350,8 @@ def main(argv: Sequence[str]) -> int:
         statuses = [method(Reference(**i["reference"])) for i in test]
         results[name] = score(statuses, test)
         print(f"  {name:12s} accuracy {results[name]['accuracy']:.3f}", flush=True)
+    if any(r["unchecked"] for r in results.values()):
+        print("warning: some lookups failed (network); rerun to fill them from the cache")
     exhausted = _budget_spent(sources)
     if exhausted:
         print("warning: OpenAlex's search budget ran out; some searches were skipped")

@@ -117,6 +117,8 @@ def test_candidates_baselines_and_fit() -> None:
     )
     assert scored["accuracy"] == 1.0
     assert scored["problem_recall"] == 1.0
+    assert scored["unchecked"] == 0
+    assert match.score([Status.UNCHECKED], [{"fault": "correct"}])["unchecked"] == 1
     table = match.markdown({"results": {"Citeright": scored}})
     assert "| Citeright | 100.0%" in table
 
