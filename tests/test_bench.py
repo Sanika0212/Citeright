@@ -60,6 +60,7 @@ class ToySources(Sources):
         self.openalex = Index(recs)  # type: ignore[assignment]
         self.crossref = Index(recs)  # type: ignore[assignment]
         self.arxiv = Index([])  # type: ignore[assignment]
+        self.europepmc = type("NoAbstracts", (), {"abstract": lambda self, doi: ""})()  # type: ignore[assignment]
 
     def doi_exists(self, doi: str) -> bool | None:
         return doi.startswith("10.1000/") and doi.split("/")[1].isdigit()

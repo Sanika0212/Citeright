@@ -46,6 +46,7 @@ WAKEFIELD = Record(
 class FakeIndex:
     def __init__(self, records: list[Record]) -> None:
         self.records = records
+        self.exhausted = False
 
     def by_doi(self, doi: str) -> Record | None:
         return next((r for r in self.records if r.doi == doi), None)
@@ -79,9 +80,15 @@ class FakeSources(Sources):
         self.openalex = FakeIndex(records)  # type: ignore[assignment]
         self.crossref = FakeCrossref(records)  # type: ignore[assignment]
         self.arxiv = FakeIndex([])  # type: ignore[assignment]
+        self.europepmc = FakeAbstracts()  # type: ignore[assignment]
 
     def doi_exists(self, doi: str) -> bool | None:
         return doi in {r.doi for r in (DEEP, RESNET, WAKEFIELD)}
+
+
+class FakeAbstracts:
+    def abstract(self, doi: str) -> str:
+        return "Residual networks with 152 layers won ImageNet." if doi == RESNET.doi else ""
 
 
 MODEL = MatchModel(
@@ -251,7 +258,10 @@ def test_check_whole_draft() -> None:
     assert report.uncited == ["unused"]
     verdicts = {c.key: c.verdict for c in report.checks}
     assert verdicts["lecun"] is Verdict.SUPPORTS
-    assert verdicts["he"] is Verdict.NO_TEXT  # no abstract available
+    assert verdicts["he"] is not Verdict.NO_TEXT  # abstract found through Europe PMC
+    he = next(c for c in report.checks if c.key == "he")
+    assert he.text_source == "abstract"
+    assert verdicts["wakefield"] is Verdict.NO_TEXT  # no abstract anywhere
     counts = report.counts()
     assert counts["retracted"] == 1
     assert counts["claims_supports"] == 1

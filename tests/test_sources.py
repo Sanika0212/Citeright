@@ -69,6 +69,19 @@ def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, text='<feed xmlns="http://www.w3.org/2005/Atom"></feed>')
     if "export.arxiv.org" in url:
         return httpx.Response(200, text=ARXIV_FEED)
+    if "ebi.ac.uk/europepmc" in url and "nature14539" in url:
+        return httpx.Response(
+            200,
+            json={
+                "resultList": {
+                    "result": [
+                        {"abstractText": "<h4>Abstract</h4>Deep learning allows models to learn."}
+                    ]
+                }
+            },
+        )
+    if "ebi.ac.uk/europepmc" in url:
+        return httpx.Response(200, json={"resultList": {"result": []}})
     if "doi.org/api/handles" in url:
         return httpx.Response(500)
     return httpx.Response(404)
@@ -165,3 +178,11 @@ def test_http_transport_errors(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError):
         ok.json("https://x.test/a")
     assert json.loads("{}") == {}
+
+
+def test_europepmc_abstracts(sources: Sources) -> None:
+    assert (
+        sources.europepmc.abstract("10.1038/nature14539")
+        == "Abstract Deep learning allows models to learn."
+    )
+    assert sources.europepmc.abstract("10.1/none") == ""

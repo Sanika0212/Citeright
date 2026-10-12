@@ -18,6 +18,7 @@ For each reference:
 
 from __future__ import annotations
 
+import contextlib
 import json
 import math
 from collections.abc import Sequence
@@ -146,17 +147,23 @@ class Resolver:
         return sorted(out, key=lambda s: -s.probability)
 
     def _notices(self, rec: Record) -> Record:
-        """Attach Crossref's editorial notices (retractions, corrections, concerns)."""
-        if rec.source == "crossref" or not rec.doi:
-            return rec
-        try:
-            other = self.sources.crossref.by_doi(rec.doi)
-        except RuntimeError:
-            return rec
-        if other is not None:
-            rec.notices = other.notices
-            rec.retracted = rec.retracted or other.retracted
-            rec.abstract = rec.abstract or other.abstract
+        """Attach Crossref's editorial notices (retractions, corrections, concerns) and
+        find an abstract when the record has none (Crossref, Europe PMC, arXiv)."""
+        if rec.source != "crossref" and rec.doi:
+            try:
+                other = self.sources.crossref.by_doi(rec.doi)
+            except RuntimeError:
+                other = None
+            if other is not None:
+                rec.notices = other.notices
+                rec.retracted = rec.retracted or other.retracted
+                rec.abstract = rec.abstract or other.abstract
+        if not rec.abstract and rec.doi:
+            with contextlib.suppress(RuntimeError):
+                rec.abstract = self.sources.europepmc.abstract(rec.doi)
+        if not rec.abstract and rec.arxiv and rec.source != "arxiv":
+            preprint = self.sources.arxiv.by_id(rec.arxiv)
+            rec.abstract = preprint.abstract if preprint else ""
         return rec
 
     def resolve(self, ref: Reference) -> Resolution:
@@ -194,6 +201,13 @@ class Resolver:
             if not self._confident(scored):
                 found.extend(self.sources.openalex.search(ref.title or ref.raw, self.limit))
                 scored = self._score(ref, found)
+            if not self._confident(scored) or (scored and scored[0].features["year_far"]):
+                # arXiv too (no daily budget); and a match whose year is far off may be a
+                # reprint of the work the reference means, so keep looking for a closer one
+                found.extend(self.sources.arxiv.search(ref.title or ref.raw, self.limit))
+                if not self.sources.openalex.exhausted and ref.title:
+                    found.extend(self.sources.openalex.search(ref.title, self.limit))
+                scored = self._score(ref, _unique(found))
         if not self._confident(scored):
             if doi_record is not None and ref.title:
                 issues.append(f"DOI {ref.doi} belongs to another work: {doi_record.title!r}")
@@ -244,6 +258,17 @@ class Resolver:
             return [self.resolve(r) for r in refs]
         with ThreadPoolExecutor(max_workers=workers) as pool:
             return list(pool.map(self.resolve, refs))
+
+
+def _unique(records: Sequence[Record]) -> list[Record]:
+    seen: set[tuple[str, str]] = set()
+    out = []
+    for rec in records:
+        key = (rec.source, rec.id)
+        if key not in seen:
+            seen.add(key)
+            out.append(rec)
+    return out
 
 
 def _is_notice(issue: str) -> bool:

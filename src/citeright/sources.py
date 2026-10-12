@@ -1,4 +1,5 @@
-"""Scholarly metadata sources: doi.org, OpenAlex, Crossref and arXiv (all free, no key).
+"""Scholarly metadata sources: doi.org, OpenAlex, Crossref, arXiv and Europe PMC (all free,
+no key).
 
 Every request goes through :class:`Http`, which caches responses on disk (so a second
 check of the same draft is instant and polite), retries rate limits and server errors
@@ -295,6 +296,9 @@ class Crossref:
 
 # ------------------------------------------------------------------------- arXiv
 
+_ARXIV_STOP = frozenset(
+    "a an and the of on in for to with by from is are all you we our it".split()
+)
 _ATOM = {"a": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
 
@@ -339,12 +343,41 @@ class ArXiv:
         return records[0] if records else None
 
     def search(self, title: str, limit: int = 5) -> list[Record]:
+        """Title phrase search, then all content words if the phrase finds nothing."""
         words = re.sub(r"[^\w\s-]", " ", title).split()
         if not words:
             return []
-        query = " AND ".join(f"ti:{w}" for w in words[:12])
-        status, body = self.http.get(self.base, {"search_query": query, "max_results": limit})
-        return _arxiv_records(body) if status == 200 else []
+        phrase = f'ti:"{" ".join(words[:20])}"'
+        content = [w for w in words if w.lower() not in _ARXIV_STOP][:12]
+        for query in (phrase, " AND ".join(f"ti:{w}" for w in content)):
+            if not query:
+                continue
+            status, body = self.http.get(self.base, {"search_query": query, "max_results": limit})
+            records = _arxiv_records(body) if status == 200 else []
+            if records:
+                return records
+        return []
+
+
+# ------------------------------------------------------------------- Europe PMC
+
+
+class EuropePMC:
+    """Abstracts by DOI from Europe PMC (free, no key): biomedical and much of science,
+    including publishers whose abstracts OpenAlex and Crossref do not carry."""
+
+    base = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+
+    def __init__(self, http: Http) -> None:
+        self.http = http
+
+    def abstract(self, doi: str) -> str:
+        data = self.http.json(
+            self.base,
+            {"query": f'DOI:"{doi}"', "resultType": "core", "format": "json", "pageSize": 1},
+        )
+        results = ((data or {}).get("resultList") or {}).get("result") or []
+        return _strip_tags(results[0].get("abstractText") or "") if results else ""
 
 
 class Sources:
@@ -355,6 +388,7 @@ class Sources:
         self.openalex = OpenAlex(self.http)  # reads OPENALEX_API_KEY
         self.crossref = Crossref(self.http)
         self.arxiv = ArXiv(self.http)
+        self.europepmc = EuropePMC(self.http)
 
     def doi_exists(self, doi: str) -> bool | None:
         return doi_exists(self.http, doi)

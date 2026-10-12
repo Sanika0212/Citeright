@@ -148,7 +148,7 @@ class NLIChecker(_Transformer):
             enc = self._tokenizer(
                 [p for p, _ in batch],
                 [c for _, c in batch],
-                truncation="only_first",
+                truncation="longest_first",
                 max_length=512,
                 padding=True,
                 return_tensors="pt",
@@ -186,7 +186,7 @@ class MiniCheckChecker(_Transformer):
             enc = self._tokenizer(
                 [p for p, _ in batch],
                 [c for _, c in batch],
-                truncation="only_first",
+                truncation="longest_first",
                 max_length=512,
                 padding=True,
                 return_tensors="pt",
