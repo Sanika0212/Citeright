@@ -5,10 +5,10 @@
   "not_found": 1,
   "retracted": 1,
   "unchecked": 0,
-  "claims_supports": 2,
+  "claims_supports": 4,
   "claims_contradicts": 0,
-  "claims_not_found": 2,
-  "claims_no_text": 2
+  "claims_not_found": 1,
+  "claims_no_text": 1
  },
  "resolutions": [
   {
@@ -47,7 +47,7 @@
     "type": "article",
     "notices": []
    },
-   "probability": 0.9985657532638723,
+   "probability": 0.9985845249240594,
    "issues": [],
    "checks": {
     "title_sim": 1.0,
@@ -106,7 +106,7 @@
     "type": "preprint",
     "notices": []
    },
-   "probability": 0.5443650560706573,
+   "probability": 0.5340755279438572,
    "issues": [
     "year is 2017, not 2015"
    ],
@@ -124,7 +124,7 @@
     "arxiv_equal": 0.0,
     "venue_sim": 0.07407407407407407
    },
-   "candidates": 10
+   "candidates": 15
   },
   {
    "reference": {
@@ -158,13 +158,13 @@
     "doi": "10.1109/cvpr.2016.90",
     "arxiv": null,
     "venue": "2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
-    "abstract": "",
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers---8x deeper than VGG nets but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
     "retracted": false,
     "url": "https://doi.org/10.1109/cvpr.2016.90",
     "type": "proceedings-article",
     "notices": []
    },
-   "probability": 0.7464203511757924,
+   "probability": 0.7438645073175726,
    "issues": [
     "DOI 10.1038/nature14539 belongs to another work ('Deep learning'); this work's DOI is 10.1109/cvpr.2016.90"
    ],
@@ -219,7 +219,7 @@
     "type": "journal-article",
     "notices": []
    },
-   "probability": 0.001070430227321271,
+   "probability": 0.0010437200321378208,
    "issues": [
     "DOI 10.5555/jmlr.2021.0193 does not exist"
    ],
@@ -296,7 +296,7 @@
      }
     ]
    },
-   "probability": 0.9985657532638723,
+   "probability": 0.9985845249240594,
    "issues": [
     "retracted on 2010-02-06 (10.1016/s0140-6736(10)60175-4)",
     "correction published 2004-03-06 (10.1016/s0140-6736(04)15715-2)"
@@ -330,10 +330,10 @@
    },
    "key": "lecun2015",
    "verdict": "supports",
-   "probability": 0.9254792117839715,
+   "probability": 0.9217324432447018,
    "evidence": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer.",
    "evidence_score": 0.9995452761650085,
-   "contradiction": 0.004137725744735506,
+   "contradiction": 0.005153531302106438,
    "text_source": "abstract"
   },
   {
@@ -347,28 +347,28 @@
    },
    "key": "vaswani2017",
    "verdict": "supports",
-   "probability": 0.8254164433257515,
+   "probability": 0.8248202509862976,
    "evidence": "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU.",
    "evidence_score": 0.9728843569755554,
-   "contradiction": 0.014087610024653176,
+   "contradiction": 0.015870698490186543,
    "text_source": "abstract"
   },
   {
    "citation": {
-    "sentence": "Residual connections made networks with more than a hundred layers trainable [@he2016].",
+    "sentence": "Residual learning eases the training of networks far deeper than before [@he2016].",
     "keys": [
      "he2016"
     ],
     "line": 6,
-    "claim": "Residual connections made networks with more than a hundred layers trainable."
+    "claim": "Residual learning eases the training of networks far deeper than before."
    },
    "key": "he2016",
-   "verdict": "no_text",
-   "probability": 0.0,
-   "evidence": "",
-   "evidence_score": 0.0,
-   "contradiction": 0.0,
-   "text_source": ""
+   "verdict": "supports",
+   "probability": 0.8729810266532488,
+   "evidence": "We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth.",
+   "evidence_score": 0.9991740584373474,
+   "contradiction": 0.006715049734905638,
+   "text_source": "abstract"
   },
   {
    "citation": {
@@ -381,10 +381,10 @@
    },
    "key": "lecun2015",
    "verdict": "not_found",
-   "probability": 0.1727276813213666,
+   "probability": 0.16801189164242997,
    "evidence": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction.",
    "evidence_score": 0.000440785865066573,
-   "contradiction": 0.06674840536414735,
+   "contradiction": 0.0672018788464052,
    "text_source": "abstract"
   },
   {
@@ -406,19 +406,19 @@
   },
   {
    "citation": {
-    "sentence": "Some early clinical reports linked the MMR vaccine to developmental disorders [@wakefield1998].",
+    "sentence": "An early case series reported that parents associated the onset of behavioural symptoms with MMR vaccination [@wakefield1998].",
     "keys": [
      "wakefield1998"
     ],
     "line": 10,
-    "claim": "Some early clinical reports linked the MMR vaccine to developmental disorders."
+    "claim": "An early case series reported that parents associated the onset of behavioural symptoms with MMR vaccination."
    },
    "key": "wakefield1998",
-   "verdict": "not_found",
-   "probability": 0.41586289628296036,
-   "evidence": "Histology showed patchy chronic inflammation in the colon in 11 children and reactive ileal lymphoid hyperplasia in seven, but no granulomas. Behavioural disorders included autism (nine), disintegrative psychosis (one), and possible postviral or vaccinal encephalitis (two).",
-   "evidence_score": 0.8120874762535095,
-   "contradiction": 0.027107794875419096,
+   "verdict": "supports",
+   "probability": 0.9241161614255253,
+   "evidence": "Findings Onset of behavioural symptoms was associated, by the parents, with measles, mumps, and rubella vaccination in eight of the 12 children, with measles infection in one child, and otitis media in another. All 12 children had intestinal abnormalities, ranging from lymphoid nodular hyperplasia to aphthoid ulceration. Histology showed patchy chronic inflammation in the colon in 11 children and reactive ileal lymphoid hyperplasia in seven, but no granulomas.",
+   "evidence_score": 0.9993333220481873,
+   "contradiction": 0.005057452369092423,
    "text_source": "abstract"
   }
  ],
