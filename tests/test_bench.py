@@ -139,6 +139,17 @@ def test_match_main_with_cached_data(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert MatchModel.load(model_path).threshold > 0
 
 
+def test_match_keeps_no_short_sample(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    sources = ToySources(records())
+    sources.openalex.exhausted = True
+    monkeypatch.setattr(match, "Sources", lambda: sources)
+    monkeypatch.setattr(match, "sample_records", lambda *a: records())
+    monkeypatch.setattr(match, "sample_retracted", lambda *a: [])
+    with pytest.raises(SystemExit, match="budget"):
+        run("match", ["--out", str(tmp_path / "m"), "--model-out", str(tmp_path / "x.json")])
+    assert not (tmp_path / "m" / "references.json").exists()
+
+
 class Scripted:
     name = "scripted"
 

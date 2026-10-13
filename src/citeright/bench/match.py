@@ -310,11 +310,11 @@ def main(argv: Sequence[str]) -> int:
         retracted = sample_retracted(sources, args.retracted, args.seed)
         truths = {r.id: asdict(r) for r in [*records, *retracted]}
         data = {"items": build(records, retracted, args.seed), "truths": truths}
+        if sources.openalex.exhausted:  # never keep a short sample
+            raise SystemExit("OpenAlex's daily budget ran out while sampling; try again later")
         data_file.write_text(json.dumps(data, indent=1))
     items, truths = data["items"], data["truths"]
     print(f"{len(items)} references: {dict(Counter(i['fault'] for i in items))}", flush=True)
-    if sources.openalex.exhausted:
-        raise SystemExit("OpenAlex's daily budget ran out while sampling; try again later")
     n = len(items)
     train, dev, test = items[: n * 3 // 5], items[n * 3 // 5 : n * 4 // 5], items[n * 4 // 5 :]
     placeholder = MatchModel(dict.fromkeys(FEATURES, 0.0), 0.0)
