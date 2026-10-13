@@ -236,8 +236,8 @@ def plot_match(summary: dict[str, Any], out: Path, mode: str) -> Path:
         fig,
         "Which reference problems does each check catch?",
         f"{summary['test']} held-out references from OpenAlex reference lists, each with at "
-        "most one planted fault. Share given the right\nstatus (verified, mismatch, not "
-        "found or retracted).",
+        "most one planted fault (count in brackets).\nShare given the right status (verified, "
+        "mismatch, not found or retracted).",
         theme,
     )
     top = 1 - 1.0 / fig.get_figheight()
@@ -245,7 +245,9 @@ def plot_match(summary: dict[str, Any], out: Path, mode: str) -> Path:
     ax = fig.add_axes((0.27, bottom, 0.7, top - bottom))
     ax.set_xlim(-0.02, 1.04)
     ax.set_ylim(-0.6, len(faults) - 0.4)
-    ax.set_yticks(range(len(faults)), [FAULTS[f] for f in faults][::-1])
+    counts = summary.get("faults", {})
+    labels = [f"{FAULTS[f]} ({counts[f]})" if f in counts else FAULTS[f] for f in faults]
+    ax.set_yticks(range(len(faults)), labels[::-1])
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0], ["0%", "25%", "50%", "75%", "100%"])
     ax.grid(True, axis="x")
     ax.set_axisbelow(True)
