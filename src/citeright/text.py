@@ -80,9 +80,16 @@ def tokens(text: str, *, stop: bool = True) -> list[str]:
     return [w for w in words if not (stop and w in _STOP)]
 
 
+_PARTICLES = {
+    "al", "da", "das", "de", "del", "della", "den", "der", "di", "do", "dos", "du", "el",
+    "la", "le", "ten", "ter", "van", "von",
+}  # fmt: skip
+
+
 def surname(name: str) -> str:
     """``"Vaswani, Ashish"``, ``"Ashish Vaswani"``, ``"A. Vaswani"`` and ``"Vaswani A"`` all
-    give ``vaswani``."""
+    give ``vaswani``. Particles and hyphens are dropped, since sources disagree on them:
+    ``"de Oliveira"`` and ``"Oliveira"``, ``"El-Hassouni"`` and ``"El Hassouni"`` agree."""
     name = delatex(name).strip()
     if "," in name:
         last = name.split(",", 1)[0]
@@ -91,14 +98,15 @@ def surname(name: str) -> str:
         if not parts:
             return ""
         if len(parts) >= 2 and re.fullmatch(r"[A-Z]{1,3}", parts[-1]):
-            return normalize(" ".join(parts[:-1]))  # Vancouver style: "He K", "Smith JA"
-        # keep particles with the surname: "Ludwig van Beethoven" -> "van beethoven"
-        last = parts[-1]
-        for i, part in enumerate(parts[:-1]):
-            if part.lower() in {"van", "von", "de", "der", "den", "da", "di", "del", "la", "le"}:
-                last = " ".join(parts[i:])
-                break
-    return normalize(last)
+            last = " ".join(parts[:-1])  # Vancouver style: "He K", "Smith JA"
+        else:
+            last = parts[-1]
+            for i, part in enumerate(parts[:-1]):  # "Ludwig van Beethoven"
+                if part.lower() in _PARTICLES:
+                    last = " ".join(parts[i:])
+                    break
+    words = normalize(last).split()
+    return " ".join([w for w in words if w not in _PARTICLES] or words[-1:])
 
 
 def normalize_doi(doi: str | None) -> str | None:
