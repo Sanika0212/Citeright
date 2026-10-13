@@ -11,8 +11,13 @@ uv sync --extra models --extra bench --extra viz
 ## 1. Are the references real, correct and not retracted? (`bench match`)
 
 ```bash
-uv run citeright bench match --seeds 60 --per-seed 12 --retracted 60
+OPENALEX_API_KEY=... uv run citeright bench match --seeds 60 --per-seed 12 --retracted 60
 ```
+
+The benchmark needs more OpenAlex searches than the anonymous daily budget allows, so
+set `OPENALEX_API_KEY` (free from OpenAlex). Without it, a run whose budget runs out
+while sampling stops and saves nothing, and one that runs out later finishes with a
+warning that searches were skipped.
 
 1. **Data.** A random sample of 60 articles published 2021 to 2024 with more than five
    citations is drawn from OpenAlex, across all fields, and up to 12 works from each
@@ -50,6 +55,17 @@ uv run citeright bench match --seeds 60 --per-seed 12 --retracted 60
       more), otherwise not found;
    3. `rules`: the first candidate with a near-identical title, then hand-set
       tolerances on first author and year, plus the retraction flag.
+5. **Notes.**
+   1. OpenAlex's seeded sample changes as its index grows, so the drawn references are
+      saved to `runs/match/references.json` and reused by later runs; a new draw gives
+      different references and slightly different numbers. A sample cut short by the
+      OpenAlex search budget is never saved, and every lookup that fails is counted
+      (`unchecked` in `results.json`; zero in the reported run).
+   2. The reported run was made with an OpenAlex API key, so no search was skipped. It
+      follows one fix found by reading the test errors of the run before it: surnames
+      are compared without particles and hyphens ("de Oliveira" and "Oliveira",
+      "El-Hassouni" and "El Hassouni"). The fix helps the rules baseline equally; before
+      it, Citeright scored 95.7% and the rules 95.0%.
 
 ## 2. Does the cited work back the sentence? (`bench support`)
 

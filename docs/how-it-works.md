@@ -48,7 +48,8 @@ For each reference (`citeright.resolve`):
    anonymous users a daily search budget, so it is the fallback), then arXiv's.
 3. **Match.** Each candidate is compared with the reference field by field: title
    similarity (robust to case, accents, LaTeX, typos and dropped subtitles), whether the
-   first author matches, author overlap, year difference, DOI and arXiv equality, venue
+   first author matches (surnames compared without particles such as "de" or "van" and
+   without hyphens, which sources write differently), author overlap, year difference, DOI and arXiv equality, venue
    similarity. A logistic model turns the comparison into P(this record is the work the
    reference means). The model and its decision threshold are fitted on real references
    with injected faults (`citeright bench match`), not set by hand.

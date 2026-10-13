@@ -117,7 +117,42 @@ reproduce it.
 
 ### Are the references real, correct and not retracted?
 
-<!-- match results -->
+649 works drawn from the reference lists of 60 random 2021 to 2024 articles in
+OpenAlex (all fields) and 56 retracted articles, each written the way an author would
+and given at most one planted fault: a typo in the title, a year off by 2 to 4, another
+reference's first author, another reference's DOI, an invented DOI, or a fabricated
+reference spliced from real ones. The match model is fitted on 60% and its threshold
+chosen on 20%; every number below is on the other 141 references.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/match-dark.png">
+  <img alt="Share of references given the right status, per planted fault: Citeright 97% overall, hand-set rules 96%, title search 63%, DOI check 55%; title search and the DOI check miss every wrong year, wrong author and borrowed DOI" src="docs/assets/match-light.png" width="100%">
+</picture>
+
+| Method | Right status | Problem precision | Problem recall |
+|---|---|---|---|
+| **Citeright** | **97.2%** | **97.6%** | **98.8%** |
+| Hand-set rules on the same lookups | 96.5% | 97.6% | 97.6% |
+| Title search only | 63.1% | 97.1% | 39.3% |
+| DOI check only | 55.3% | 100.0% | 45.2% |
+
+1. **Checking that the DOI resolves catches less than half the problems.** It misses
+   every wrong year, wrong author and borrowed DOI, and the fabricated references written
+   without a DOI.
+2. **A title search finds fabrications but not errors**: a reference whose title exists
+   passes whatever its year, authors or DOI say.
+3. **Comparing every field catches nearly everything**: 98.8% of the references with a
+   problem are flagged, and 97.6% of the flags are right. Hand-set rules over the same
+   lookups come within one reference of the fitted model; 141 references cannot separate
+   them. Where they differ, it is on retractions: an expression of concern or a
+   withdrawal notice is often published under the paper's own title, and the rules take
+   the first record with that title. The model scores every candidate and finds the
+   article itself (8 of 9 retracted papers against 6 of 9).
+4. **The four misses**: a title typo that no search returned; a metadata record that
+   gives the first author's names in reverse order; a reference to a retraction notice,
+   which OpenAlex flags as retracted and Crossref does not; and a reference with a wrong
+   year that Citeright reports as retracted instead, which it is: the article was
+   retracted in 2022.
 
 ### Does the cited work back the sentence?
 
