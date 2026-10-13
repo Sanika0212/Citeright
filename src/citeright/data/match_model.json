@@ -1,0 +1,19 @@
+{
+ "weights": {
+  "title_sim": 2.9474773539248713,
+  "title_exact": 4.012277280475321,
+  "first_author": 1.166712880848612,
+  "author_overlap": 2.45456498890553,
+  "has_authors": -0.0033520908997018567,
+  "year_close": 1.9579718766856165,
+  "year_far": -0.6532449928340517,
+  "has_year": -0.0033520908997018567,
+  "doi_equal": 2.648445638226382,
+  "doi_differs": -1.128210097222051,
+  "arxiv_equal": 0.0,
+  "venue_sim": 1.9612177332518672
+ },
+ "bias": -10.583089986804323,
+ "threshold": 0.3,
+ "fitted_on": "423 references (2315 candidate pairs) from OpenAlex reference lists; threshold 0.30 chosen on 141 development references"
+}
